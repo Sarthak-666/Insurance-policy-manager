@@ -1,0 +1,111 @@
+{% extends 'base.html' %}
+
+{% set edit_mode = customer is defined and customer %}
+
+{% block title %}{{ 'Edit Customer' if edit_mode else 'Add Customer' }}{% endblock %}
+{% block page_title %}
+    <i class="bi bi-{{ 'pencil-square' if edit_mode else 'person-plus-fill' }} me-2"></i>
+    {{ 'Edit Customer' if edit_mode else 'Add Customer' }}
+{% endblock %}
+
+{% block content %}
+
+<!-- Breadcrumb -->
+<nav aria-label="breadcrumb" class="mb-4">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="{{ url_for('list_customers') }}" class="text-decoration-none">Customers</a></li>
+        <li class="breadcrumb-item active">{{ 'Edit' if edit_mode else 'Add New' }}</li>
+    </ol>
+</nav>
+
+<div class="row justify-content-center">
+    <div class="col-lg-8 col-xl-7">
+        <div class="card">
+            <div class="card-header bg-white py-3">
+                <h6 class="mb-0 fw-bold" style="color:#1e3a5f;">
+                    {% if edit_mode %}
+                        <i class="bi bi-pencil me-1"></i> Editing: {{ customer.name }}
+                    {% else %}
+                        <i class="bi bi-person-plus me-1"></i> New Customer Details
+                    {% endif %}
+                </h6>
+            </div>
+            <div class="card-body p-4">
+                <form method="POST"
+                      action="{{ url_for('edit_customer', id=customer.id) if edit_mode else url_for('add_customer') }}">
+
+                    <!-- Name -->
+                    <div class="mb-3">
+                        <label for="name" class="form-label fw-semibold">
+                            Full Name <span class="text-danger">*</span>
+                        </label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="bi bi-person"></i></span>
+                            <input type="text" class="form-control" id="name" name="name"
+                                   placeholder="e.g. Aarav Sharma"
+                                   value="{{ customer.name if edit_mode else '' }}" required>
+                        </div>
+                    </div>
+
+                    <!-- Email -->
+                    <div class="mb-3">
+                        <label for="email" class="form-label fw-semibold">
+                            Email Address <span class="text-danger">*</span>
+                        </label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="bi bi-envelope"></i></span>
+                            <input type="email" class="form-control" id="email" name="email"
+                                   placeholder="e.g. aarav.sharma@gmail.com"
+                                   value="{{ customer.email if edit_mode else '' }}" required>
+                        </div>
+                    </div>
+
+                    <!-- Phone -->
+                    <div class="mb-3">
+                        <label for="phone" class="form-label fw-semibold">Phone Number</label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="bi bi-telephone"></i></span>
+                            <input type="text" class="form-control" id="phone" name="phone"
+                                   placeholder="e.g. 9876543210"
+                                   value="{{ customer.phone if edit_mode else '' }}">
+                        </div>
+                    </div>
+
+                    <!-- Address -->
+                    <div class="mb-3">
+                        <label for="address" class="form-label fw-semibold">Address</label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="bi bi-geo-alt"></i></span>
+                            <textarea class="form-control" id="address" name="address" rows="2"
+                                      placeholder="e.g. 12, MG Road, Bengaluru, Karnataka 560001">{{ customer.address if edit_mode else '' }}</textarea>
+                        </div>
+                    </div>
+
+                    <!-- Date of Birth -->
+                    <div class="mb-4">
+                        <label for="dob" class="form-label fw-semibold">Date of Birth</label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="bi bi-calendar-event"></i></span>
+                            <input type="date" class="form-control" id="dob" name="dob"
+                                   value="{{ customer.dob if edit_mode else '' }}">
+                        </div>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="d-flex gap-2">
+                        <button type="submit" class="btn btn-{{ 'warning' if edit_mode else 'primary' }}">
+                            <i class="bi bi-{{ 'check-lg' if edit_mode else 'plus-lg' }} me-1"></i>
+                            {{ 'Update Customer' if edit_mode else 'Add Customer' }}
+                        </button>
+                        <a href="{{ url_for('list_customers') }}" class="btn btn-outline-secondary">
+                            <i class="bi bi-x-lg me-1"></i> Cancel
+                        </a>
+                    </div>
+
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

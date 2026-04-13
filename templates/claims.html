@@ -1,0 +1,106 @@
+{% extends 'base.html' %}
+
+{% block title %}Claims{% endblock %}
+{% block page_title %}<i class="bi bi-clipboard2-pulse-fill me-2"></i>Claims{% endblock %}
+
+{% block content %}
+
+<!-- Header Row -->
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <p class="text-muted mb-0">Track and manage all insurance claims</p>
+    <a href="{{ url_for('add_claim') }}" class="btn btn-primary">
+        <i class="bi bi-plus-circle-fill me-1"></i> File New Claim
+    </a>
+</div>
+
+<!-- Claims Table -->
+<div class="card">
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th style="width:70px;">#</th>
+                        <th>Policy Number</th>
+                        <th>Customer</th>
+                        <th>Claim Date</th>
+                        <th>Description</th>
+                        <th class="text-end">Amount (₹)</th>
+                        <th class="text-center">Status</th>
+                        <th>Resolved</th>
+                        <th class="text-center" style="width:200px;">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% if claims %}
+                        {% for cl in claims %}
+                        <tr>
+                            <td class="fw-semibold text-muted">{{ cl.id }}</td>
+                            <td><code>{{ cl.policy_number }}</code></td>
+                            <td><i class="bi bi-person-circle me-1 text-primary"></i>{{ cl.customer_name }}</td>
+                            <td>{{ cl.claim_date }}</td>
+                            <td>
+                                <span title="{{ cl.description }}" style="max-width:220px;display:inline-block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">
+                                    {{ cl.description }}
+                                </span>
+                            </td>
+                            <td class="text-end fw-semibold">{{ "{:,.2f}".format(cl.claim_amount) }}</td>
+                            <td class="text-center">
+                                {% if cl.status == 'pending' %}
+                                    <span class="badge bg-warning text-dark">
+                                        <i class="bi bi-hourglass-split me-1"></i>Pending
+                                    </span>
+                                {% elif cl.status == 'approved' %}
+                                    <span class="badge bg-success">
+                                        <i class="bi bi-check-circle-fill me-1"></i>Approved
+                                    </span>
+                                {% else %}
+                                    <span class="badge bg-danger">
+                                        <i class="bi bi-x-circle-fill me-1"></i>Rejected
+                                    </span>
+                                {% endif %}
+                            </td>
+                            <td>{{ cl.resolved_date if cl.resolved_date else '—' }}</td>
+                            <td class="text-center">
+                                {% if cl.status == 'pending' %}
+                                    <form action="{{ url_for('approve_claim', id=cl.id) }}" method="POST" class="d-inline">
+                                        <button type="submit" class="btn btn-sm btn-success me-1"
+                                                onclick="return confirm('Approve this claim? A payment record will be created automatically.')">
+                                            <i class="bi bi-check-lg"></i> Approve
+                                        </button>
+                                    </form>
+                                    <form action="{{ url_for('reject_claim', id=cl.id) }}" method="POST" class="d-inline">
+                                        <button type="submit" class="btn btn-sm btn-outline-danger"
+                                                onclick="return confirm('Are you sure you want to reject this claim?')">
+                                            <i class="bi bi-x-lg"></i> Reject
+                                        </button>
+                                    </form>
+                                {% else %}
+                                    <span class="text-muted" style="font-size:.82rem;">No actions</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    {% else %}
+                        <tr>
+                            <td colspan="9" class="text-center py-5">
+                                <i class="bi bi-clipboard-x text-muted" style="font-size:2.5rem;"></i>
+                                <p class="text-muted mt-2 mb-1">No claims found.</p>
+                                <a href="{{ url_for('add_claim') }}" class="btn btn-sm btn-primary mt-1">
+                                    <i class="bi bi-plus-lg me-1"></i> File a new claim
+                                </a>
+                            </td>
+                        </tr>
+                    {% endif %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    {% if claims %}
+    <div class="card-footer bg-white text-muted" style="font-size:.82rem;">
+        Showing {{ claims|length }} claim{{ 's' if claims|length != 1 }}
+    </div>
+    {% endif %}
+</div>
+
+{% endblock %}

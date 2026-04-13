@@ -1,0 +1,151 @@
+{% extends 'base.html' %}
+
+{% block title %}Dashboard{% endblock %}
+{% block page_title %}<i class="bi bi-speedometer2 me-2"></i>Dashboard{% endblock %}
+
+{% block content %}
+
+<!-- ═══════ Summary Cards ═══════ -->
+<div class="row g-4 mb-4">
+
+    <!-- Total Customers -->
+    <div class="col-xl col-md-4 col-sm-6">
+        <div class="card h-100" style="border-left: 4px solid #3b82f6;">
+            <div class="card-body d-flex align-items-center gap-3">
+                <div class="rounded-circle d-flex align-items-center justify-content-center"
+                     style="width:50px;height:50px;background:#eff6ff;color:#3b82f6;font-size:1.4rem;flex-shrink:0;">
+                    <i class="bi bi-people-fill"></i>
+                </div>
+                <div>
+                    <div class="text-muted" style="font-size:.78rem;text-transform:uppercase;letter-spacing:.5px;">Total Customers</div>
+                    <div class="fw-bold fs-4" style="color:#1e3a5f;">{{ total_customers }}</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Total Policies -->
+    <div class="col-xl col-md-4 col-sm-6">
+        <div class="card h-100" style="border-left: 4px solid #22c55e;">
+            <div class="card-body d-flex align-items-center gap-3">
+                <div class="rounded-circle d-flex align-items-center justify-content-center"
+                     style="width:50px;height:50px;background:#f0fdf4;color:#22c55e;font-size:1.4rem;flex-shrink:0;">
+                    <i class="bi bi-file-earmark-text-fill"></i>
+                </div>
+                <div>
+                    <div class="text-muted" style="font-size:.78rem;text-transform:uppercase;letter-spacing:.5px;">Total Policies</div>
+                    <div class="fw-bold fs-4" style="color:#1e3a5f;">{{ total_policies }}</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Active Policies -->
+    <div class="col-xl col-md-4 col-sm-6">
+        <div class="card h-100" style="border-left: 4px solid #14b8a6;">
+            <div class="card-body d-flex align-items-center gap-3">
+                <div class="rounded-circle d-flex align-items-center justify-content-center"
+                     style="width:50px;height:50px;background:#f0fdfa;color:#14b8a6;font-size:1.4rem;flex-shrink:0;">
+                    <i class="bi bi-shield-fill-check"></i>
+                </div>
+                <div>
+                    <div class="text-muted" style="font-size:.78rem;text-transform:uppercase;letter-spacing:.5px;">Active Policies</div>
+                    <div class="fw-bold fs-4" style="color:#1e3a5f;">{{ active_policies }}</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Pending Claims -->
+    <div class="col-xl col-md-4 col-sm-6">
+        <div class="card h-100" style="border-left: 4px solid #f59e0b;">
+            <div class="card-body d-flex align-items-center gap-3">
+                <div class="rounded-circle d-flex align-items-center justify-content-center"
+                     style="width:50px;height:50px;background:#fffbeb;color:#f59e0b;font-size:1.4rem;flex-shrink:0;">
+                    <i class="bi bi-hourglass-split"></i>
+                </div>
+                <div>
+                    <div class="text-muted" style="font-size:.78rem;text-transform:uppercase;letter-spacing:.5px;">Pending Claims</div>
+                    <div class="fw-bold fs-4" style="color:#1e3a5f;">{{ pending_claims }}</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Total Premium Collected -->
+    <div class="col-xl col-md-4 col-sm-6">
+        <div class="card h-100" style="border-left: 4px solid #8b5cf6;">
+            <div class="card-body d-flex align-items-center gap-3">
+                <div class="rounded-circle d-flex align-items-center justify-content-center"
+                     style="width:50px;height:50px;background:#f5f3ff;color:#8b5cf6;font-size:1.4rem;flex-shrink:0;">
+                    <i class="bi bi-currency-rupee"></i>
+                </div>
+                <div>
+                    <div class="text-muted" style="font-size:.78rem;text-transform:uppercase;letter-spacing:.5px;">Premium Collected</div>
+                    <div class="fw-bold fs-4" style="color:#1e3a5f;">₹{{ "{:,.2f}".format(total_premium) }}</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<!-- ═══════ Recent Policies Table ═══════ -->
+<div class="card">
+    <div class="card-header bg-white d-flex align-items-center justify-content-between py-3">
+        <h6 class="mb-0 fw-bold" style="color:#1e3a5f;">
+            <i class="bi bi-clock-history me-2"></i>Recent Policies
+        </h6>
+        <a href="{{ url_for('list_policies') }}" class="btn btn-sm btn-outline-primary">View All</a>
+    </div>
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th>#</th>
+                        <th>Customer</th>
+                        <th>Policy Number</th>
+                        <th>Type</th>
+                        <th>Premium (₹)</th>
+                        <th>Coverage (₹)</th>
+                        <th>Start</th>
+                        <th>End</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% if recent_policies %}
+                        {% for p in recent_policies %}
+                        <tr>
+                            <td>{{ p.id }}</td>
+                            <td>{{ p.customer_name }}</td>
+                            <td><code>{{ p.policy_number }}</code></td>
+                            <td>{{ p.policy_type }}</td>
+                            <td>{{ "{:,.2f}".format(p.premium_amount) }}</td>
+                            <td>{{ "{:,.2f}".format(p.coverage_amount) }}</td>
+                            <td>{{ p.start_date }}</td>
+                            <td>{{ p.end_date }}</td>
+                            <td>
+                                {% if p.status == 'active' %}
+                                    <span class="badge bg-success">Active</span>
+                                {% elif p.status == 'expired' %}
+                                    <span class="badge bg-danger">Expired</span>
+                                {% else %}
+                                    <span class="badge bg-secondary">Cancelled</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    {% else %}
+                        <tr>
+                            <td colspan="9" class="text-center text-muted py-4">No policies found.</td>
+                        </tr>
+                    {% endif %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

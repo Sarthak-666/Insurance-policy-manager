@@ -1,0 +1,181 @@
+{% extends 'base.html' %}
+
+{% set edit_mode = policy is defined and policy %}
+
+{% block title %}{{ 'Edit Policy' if edit_mode else 'Add Policy' }}{% endblock %}
+{% block page_title %}
+    <i class="bi bi-{{ 'pencil-square' if edit_mode else 'plus-circle-fill' }} me-2"></i>
+    {{ 'Edit Policy' if edit_mode else 'Add Policy' }}
+{% endblock %}
+
+{% block content %}
+
+<!-- Breadcrumb -->
+<nav aria-label="breadcrumb" class="mb-4">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="{{ url_for('list_policies') }}" class="text-decoration-none">Policies</a></li>
+        <li class="breadcrumb-item active">{{ 'Edit' if edit_mode else 'Add New' }}</li>
+    </ol>
+</nav>
+
+<div class="row justify-content-center">
+    <div class="col-lg-9 col-xl-8">
+        <div class="card">
+            <div class="card-header bg-white py-3">
+                <h6 class="mb-0 fw-bold" style="color:#1e3a5f;">
+                    {% if edit_mode %}
+                        <i class="bi bi-pencil me-1"></i> Editing: {{ policy.policy_number }}
+                    {% else %}
+                        <i class="bi bi-file-earmark-plus me-1"></i> New Policy Details
+                    {% endif %}
+                </h6>
+            </div>
+            <div class="card-body p-4">
+                <form method="POST"
+                      action="{{ url_for('edit_policy', id=policy.id) if edit_mode else url_for('add_policy') }}">
+
+                    <div class="row">
+                        <!-- Customer Dropdown -->
+                        <div class="col-md-6 mb-3">
+                            <label for="customer_id" class="form-label fw-semibold">
+                                Customer <span class="text-danger">*</span>
+                            </label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="bi bi-person"></i></span>
+                                <select class="form-select" id="customer_id" name="customer_id" required>
+                                    <option value="">— Select Customer —</option>
+                                    {% for c in customers %}
+                                        <option value="{{ c.id }}"
+                                            {{ 'selected' if edit_mode and policy.customer_id == c.id }}>
+                                            {{ c.name }}
+                                        </option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Policy Number -->
+                        <div class="col-md-6 mb-3">
+                            <label for="policy_number" class="form-label fw-semibold">
+                                Policy Number <span class="text-danger">*</span>
+                            </label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="bi bi-hash"></i></span>
+                                <input type="text" class="form-control" id="policy_number" name="policy_number"
+                                       placeholder="e.g. POL-2024-1011"
+                                       value="{{ policy.policy_number if edit_mode else '' }}" required>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <!-- Policy Type -->
+                        <div class="col-md-6 mb-3">
+                            <label for="policy_type" class="form-label fw-semibold">
+                                Policy Type <span class="text-danger">*</span>
+                            </label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="bi bi-tag"></i></span>
+                                <select class="form-select" id="policy_type" name="policy_type" required>
+                                    <option value="">— Select Type —</option>
+                                    {% for t in ['Health', 'Life', 'Vehicle', 'Home', 'Travel'] %}
+                                        <option value="{{ t }}"
+                                            {{ 'selected' if edit_mode and policy.policy_type == t }}>
+                                            {{ t }}
+                                        </option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Status -->
+                        <div class="col-md-6 mb-3">
+                            <label for="status" class="form-label fw-semibold">Status</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="bi bi-toggle-on"></i></span>
+                                <select class="form-select" id="status" name="status">
+                                    {% for s in ['active', 'expired', 'cancelled'] %}
+                                        <option value="{{ s }}"
+                                            {{ 'selected' if edit_mode and policy.status == s }}>
+                                            {{ s|capitalize }}
+                                        </option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <!-- Premium Amount -->
+                        <div class="col-md-6 mb-3">
+                            <label for="premium_amount" class="form-label fw-semibold">
+                                Premium Amount (₹) <span class="text-danger">*</span>
+                            </label>
+                            <div class="input-group">
+                                <span class="input-group-text">₹</span>
+                                <input type="number" step="0.01" min="0.01" class="form-control"
+                                       id="premium_amount" name="premium_amount"
+                                       placeholder="e.g. 12000.00"
+                                       value="{{ policy.premium_amount if edit_mode else '' }}" required>
+                            </div>
+                        </div>
+
+                        <!-- Coverage Amount -->
+                        <div class="col-md-6 mb-3">
+                            <label for="coverage_amount" class="form-label fw-semibold">
+                                Coverage Amount (₹) <span class="text-danger">*</span>
+                            </label>
+                            <div class="input-group">
+                                <span class="input-group-text">₹</span>
+                                <input type="number" step="0.01" min="0.01" class="form-control"
+                                       id="coverage_amount" name="coverage_amount"
+                                       placeholder="e.g. 500000.00"
+                                       value="{{ policy.coverage_amount if edit_mode else '' }}" required>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <!-- Start Date -->
+                        <div class="col-md-6 mb-3">
+                            <label for="start_date" class="form-label fw-semibold">
+                                Start Date <span class="text-danger">*</span>
+                            </label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="bi bi-calendar-check"></i></span>
+                                <input type="date" class="form-control" id="start_date" name="start_date"
+                                       value="{{ policy.start_date if edit_mode else '' }}" required>
+                            </div>
+                        </div>
+
+                        <!-- End Date -->
+                        <div class="col-md-6 mb-4">
+                            <label for="end_date" class="form-label fw-semibold">
+                                End Date <span class="text-danger">*</span>
+                            </label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="bi bi-calendar-x"></i></span>
+                                <input type="date" class="form-control" id="end_date" name="end_date"
+                                       value="{{ policy.end_date if edit_mode else '' }}" required>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="d-flex gap-2">
+                        <button type="submit" class="btn btn-{{ 'warning' if edit_mode else 'primary' }}">
+                            <i class="bi bi-{{ 'check-lg' if edit_mode else 'plus-lg' }} me-1"></i>
+                            {{ 'Update Policy' if edit_mode else 'Add Policy' }}
+                        </button>
+                        <a href="{{ url_for('list_policies') }}" class="btn btn-outline-secondary">
+                            <i class="bi bi-x-lg me-1"></i> Cancel
+                        </a>
+                    </div>
+
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

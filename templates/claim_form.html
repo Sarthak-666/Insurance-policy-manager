@@ -1,0 +1,97 @@
+{% extends 'base.html' %}
+
+{% block title %}File New Claim{% endblock %}
+{% block page_title %}<i class="bi bi-plus-circle-fill me-2"></i>File New Claim{% endblock %}
+
+{% block content %}
+
+<!-- Breadcrumb -->
+<nav aria-label="breadcrumb" class="mb-4">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="{{ url_for('list_claims') }}" class="text-decoration-none">Claims</a></li>
+        <li class="breadcrumb-item active">File New Claim</li>
+    </ol>
+</nav>
+
+<div class="row justify-content-center">
+    <div class="col-lg-8 col-xl-7">
+        <div class="card">
+            <div class="card-header bg-white py-3">
+                <h6 class="mb-0 fw-bold" style="color:#1e3a5f;">
+                    <i class="bi bi-clipboard-plus me-1"></i> Claim Details
+                </h6>
+            </div>
+            <div class="card-body p-4">
+                <form method="POST" action="{{ url_for('add_claim') }}">
+
+                    <!-- Policy Dropdown -->
+                    <div class="mb-3">
+                        <label for="policy_id" class="form-label fw-semibold">
+                            Policy <span class="text-danger">*</span>
+                        </label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="bi bi-file-earmark-text"></i></span>
+                            <select class="form-select" id="policy_id" name="policy_id" required>
+                                <option value="">— Select Policy —</option>
+                                {% for p in policies %}
+                                    <option value="{{ p.id }}">
+                                        {{ p.policy_number }} — {{ p.customer_name }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Claim Date -->
+                    <div class="mb-3">
+                        <label for="claim_date" class="form-label fw-semibold">
+                            Claim Date <span class="text-danger">*</span>
+                        </label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="bi bi-calendar-event"></i></span>
+                            <input type="date" class="form-control" id="claim_date" name="claim_date" required>
+                        </div>
+                    </div>
+
+                    <!-- Description -->
+                    <div class="mb-3">
+                        <label for="description" class="form-label fw-semibold">
+                            Description <span class="text-danger">*</span>
+                        </label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="bi bi-card-text"></i></span>
+                            <textarea class="form-control" id="description" name="description" rows="3"
+                                      placeholder="Describe the reason for the claim…" required></textarea>
+                        </div>
+                    </div>
+
+                    <!-- Claim Amount -->
+                    <div class="mb-4">
+                        <label for="claim_amount" class="form-label fw-semibold">
+                            Claim Amount (₹) <span class="text-danger">*</span>
+                        </label>
+                        <div class="input-group">
+                            <span class="input-group-text">₹</span>
+                            <input type="number" step="0.01" min="0.01" class="form-control"
+                                   id="claim_amount" name="claim_amount"
+                                   placeholder="e.g. 50000.00" required>
+                        </div>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="d-flex gap-2">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-send-fill me-1"></i> Submit Claim
+                        </button>
+                        <a href="{{ url_for('list_claims') }}" class="btn btn-outline-secondary">
+                            <i class="bi bi-x-lg me-1"></i> Cancel
+                        </a>
+                    </div>
+
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
